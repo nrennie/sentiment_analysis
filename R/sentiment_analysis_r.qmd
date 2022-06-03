@@ -1,0 +1,140 @@
+---
+title: "Sentiment Analysis in R"
+author: Nicola Rennie
+format:
+  html:
+    self-contained: true
+    toc: true
+    toc-location: left
+    theme: litera.scss
+---
+
+Sentiment analysis is a natural language processing technique used to analyse whether textual data is positive, negative, or neutral. A common application is the analysis of customer feedback. This tutorial serves as a brief introduction to performing sentiment analysis in R. 
+
+# Data 
+
+The data used here is from Week 19 of [#TidyTuesday](https://github.com/rfordatascience/tidytuesday/). The data can be downloaded from [here](https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-05-10/nyt_titles.tsv). You can either read it into R directly from the URL, or read in a locally saved copy. Here, I've saved a copy called `nyt_titles.tsv` in a directory one level up from my R script.
+
+The data is saved as a tab-separated values (.tsv) file, and we can read it into R using the `read_tsv()` function from the {readr} package.
+
+```{r, warning=FALSE, message=FALSE}
+library(readr)
+nyt_titles <- read_tsv("../nyt_titles.tsv")
+```
+
+```{r, echo=FALSE}
+knitr::kable(head(nyt_titles))
+```
+
+This data set contains data on books that have been on the New York Times Bestsellers List. Information is included on the title, author, the year of release, the number of weeks spent on the list, the first week on the list, the book's debut rank, and it's best rank.
+
+For this analysis we limit ourselves to the 1,000 most popular titles, in terms of the total number of weeks spent on the list. To extract these 1,000 titles, we use `slice_max()` from {dplyr}. `slice_max()` lets you extract the `n` rows for the largest values of a particular variable. We set `with_ties = FALSE` to ensure we get exactly 1000 rows returned. For the analysis here, we will analyse the sentiment of the titles. Therefore, we extract only this column using `select()`.
+
+```{r, warning=FALSE, message=FALSE}
+library(dplyr)
+text_data <- nyt_titles %>% 
+  slice_max(total_weeks, n = 1000, with_ties = FALSE) %>% 
+  select(title)
+```
+
+# Sentiment analysis
+
+In R, the main package for carrying out sentiment analysis is {tidytext}. There are two main data sets we need to download. First, we load the `stop_words` data included with {tidytext}. This data set contains a list of stop words - commonly used words such as “the”, “is” or “and”. We will later use the `stop_words` data to eliminate these unimportant words.
+
+Secondly, we obtain a list of sentiments using the `get_sentiments()` function. In this example, we use the *afinn* data. This data gives a list of known words, and their sentiment score. For the afinn data, the sentiment is given as a value between -5 and 5, where -5 is very negative, 0 is neutral, and 5 is very positive.
+
+```{r}
+library(tidytext)
+data(stop_words)
+afinn_df <- get_sentiments("afinn")
+```
+
+```{r, echo=FALSE}
+knitr::kable(head(afinn_df))
+```
+
+We use `unnest_tokens()` to process the titles data. This function splits each string into separate words, converts them to lowercase, and flattens the data such that each row represents a separate word. 
+We then use `anti_join()` to remove the stop words - this removes any rows from the titles data for which there is a corresponding row in the `stop_words` data set. 
+
+```{r}
+text_data <- text_data %>% 
+  unnest_tokens(word, title) %>% 
+  anti_join(stop_words, by = "word")
+```
+
+Now, we can join the words in the titles to the words in the sentiments data set. Note that not all words in our list will have a sentiment score in the database, so we lose some data. We join the two data sets together using `inner_join()` - this keeps only words which appear in both the titles data set and the afinn sentiments data set.
+
+```{r}
+sentiments <- text_data %>% 
+  inner_join(afinn_df, by = "word") 
+```
+
+```{r, echo=FALSE}
+knitr::kable(head(sentiments))
+```
+
+To calculate the average sentiment across all titles, we extract the sentiment `value` column as a vector using `pull()`, and then calculate the mean. The average sentiment is 0.14 - overall slightly positive!
+
+```{r}
+sentiments %>% 
+  pull(value) %>% 
+  mean()
+```
+
+# Word clouds
+
+Word clouds are commonly used to visualise the sentiments, and number of instances of words in textual data. First, we can calculate the number of times each word is used in the titles. We use `group_by()` to group together repetitions of the same word, and add the number of occurrences as a new column using `mutate()`. 
+
+```{r}
+counts <- text_data %>% 
+  group_by(word) %>%  
+  mutate(count = n())
+```
+
+We can then join the sentiments data set to the counts data set using `left_join()`, and we remove any duplicate rows where words are represented multiple times using `distinct()`.
+
+```{r}
+plot_data <- counts %>% 
+  left_join(sentiments, by = "word") %>% 
+  distinct()
+```
+
+To make our word cloud a bit nicer looking, we filter out any words that only occur once or twice. This leaves us with 104 unique words. Unfortunately, most of these don't have an associated sentiment score. If we also use `arrange()` to sort our data from most to least common words, we can see that *time* and *love* are the most common words. 
+
+```{r}
+plot_data <- plot_data %>% 
+  filter(count > 2) %>% 
+  arrange(desc(count))
+```
+
+```{r, echo=FALSE}
+knitr::kable(head(plot_data))
+```
+
+In R, {ggplot2} is the most common data visualisation package. Unfortunately, it does not have built-in functionality to create word clouds. Therefore, we load the {ggwordcloud} package in addition. The `geom_text_wordcloud()` function is the key function that constructs the word cloud. We colour the words based on their sentiment score - green for positive words, and purple for negative words. Words that do not have a sentiment score are coloured light gray. The size of the words are given by how often they occur. The limits of the colour scale are set to match the limits of the sentiment data - between -5 and 5. 
+
+We increase the maximum size of the words using `scale_size_area()` to 15, from the default value of 6 to make our word cloud fill the page. The `theme_void()` function removes elements such axes, gridlines, and ticks to make our wordcloud appear cleaner.
+
+```{r, fig.align="center", width = 600, height = 400}
+library(ggplot2)
+library(ggwordcloud)
+set.seed(42)
+ggplot(data = plot_data, 
+       mapping = aes(label = word, size = count, colour = value)) +
+  geom_text_wordcloud() +
+  scale_size_area(max_size = 15) +
+  scale_colour_gradient2(low = "#710193", 
+                         high = "#2e6930", 
+                         na.value = "#dedede", 
+                         limits = c(-5, 5)) +
+  theme_void()
+```
+
+And that's it! This was a simple introduction to sentiment analysis in R. There are many more extensions to what's covered here. For this data set, I'd be really interested in looking at the changing sentiments of titles over time. 
+
+You can download the data used in this analysis from [here](https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-05-10/nyt_titles.tsv), and the R script is available on [GitHub](https://github.com/nrennie/sentiment_analysis).
+
+
+
+
+
