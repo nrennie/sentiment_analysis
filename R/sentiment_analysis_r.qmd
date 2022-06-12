@@ -39,9 +39,7 @@ text_data <- nyt_titles %>%
 
 # Sentiment analysis
 
-In R, the main package for carrying out sentiment analysis is {tidytext}. There are two main data sets we need to download. First, we load the `stop_words` data included with {tidytext}. This data set contains a list of stop words - commonly used words such as “the”, “is” or “and”. We will later use the `stop_words` data to eliminate these unimportant words.
-
-Secondly, we obtain a list of sentiments using the `get_sentiments()` function. In this example, we use the *afinn* data. This data gives a list of known words, and their sentiment score. For the afinn data, the sentiment is given as a value between -5 and 5, where -5 is very negative, 0 is neutral, and 5 is very positive.
+In R, the main package for carrying out sentiment analysis is {tidytext}. There are two main data sets we need to download. First, we load the `stop_words` data included with {tidytext}. This data set contains a list of stop words - commonly used words such as “the”, “is” or “and”. We will later use the `stop_words` data to eliminate these unimportant words. Secondly, we obtain a list of sentiments using the `get_sentiments()` function. In this example, we use the *afinn* data. This data gives a list of known words, and their sentiment score. For the afinn data, the sentiment is given as a value between -5 and 5, where -5 is negative, 0 is neutral, and 5 is positive.
 
 ```{r}
 library(tidytext)
@@ -130,11 +128,4 @@ ggplot(data = plot_data,
   theme_void()
 ```
 
-And that's it! This was a simple introduction to sentiment analysis in R. There are many more extensions to what's covered here. For this data set, I'd be really interested in looking at the changing sentiments of titles over time. 
-
-You can download the data used in this analysis from [here](https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-05-10/nyt_titles.tsv), and the R script is available on [GitHub](https://github.com/nrennie/sentiment_analysis).
-
-
-
-
-
+And that's it! This was a simple introduction to sentiment analysis in R. There are many more extensions to what's covered here. For this data set, I'd be really interested in looking at the changing sentiments of titles over time. You can download the data used in this analysis from [here](https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-05-10/nyt_titles.tsv), and the R script is available on [GitHub](https://github.com/nrennie/sentiment_analysis).
