@@ -5,3 +5,5 @@
 *.html
 *.pdf
 nyt_titles.tsv
+/.quarto/
+/_site/

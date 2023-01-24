@@ -132,7 +132,7 @@ ggplot(data = plot_data,
 
 And that's it! This was a simple introduction to sentiment analysis in R. There are many more extensions to what's covered here. For this data set, I'd be really interested in looking at the changing sentiments of titles over time. You can download the data used in this analysis from [here](https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-05-10/nyt_titles.tsv), and the R script is available on [GitHub](https://github.com/nrennie/sentiment_analysis).
 
-{{ < pagebreak > }}
+{{< pagebreak >}}
 
 # Sentiment Analysis in Python
 
