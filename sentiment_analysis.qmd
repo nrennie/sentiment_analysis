@@ -6,7 +6,7 @@ format:
     self-contained: true
     toc: true
     toc-location: left
-    theme: litera.scss
+    theme: sketchy
 ---
 
 # Sentiment Analysis in R
@@ -15,7 +15,7 @@ Sentiment analysis is a natural language processing technique used to analyse wh
 
 ## Data 
 
-The data used here is from Week 19 of [#TidyTuesday](https://github.com/rfordatascience/tidytuesday/). The data can be downloaded from [here](https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-05-10/nyt_titles.tsv). You can either read it into R directly from the URL, or read in a locally saved copy. Here, I've saved a copy called `nyt_titles.tsv` in a directory one level up from my R script.
+The data used here is from Week 19 of [#TidyTuesday](https://github.com/rfordatascience/tidytuesday/). The data can be downloaded from [here](https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-05-10/nyt_titles.tsv). You can either read it into R directly from the URL, or read in a locally saved copy. Here, I've saved a copy called `nyt_titles.tsv` in the same directory as my script.
 
 The data is saved as a tab-separated values (.tsv) file, and we can read it into R using the `read_tsv()` function from the {readr} package.
 
@@ -140,7 +140,7 @@ Sentiment analysis is a natural language processing technique used to analyse wh
 
 ## Data 
 
-The data used here is from Week 19 of [#TidyTuesday](https://github.com/rfordatascience/tidytuesday/). The data can be downloaded from [here](https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-05-10/nyt_titles.tsv). You can either read it into Python directly from the URL, or read in a locally saved copy. Here, I've saved a copy called `nyt_titles.tsv` in a directory one level up from my Python script.
+The data used here is from Week 19 of [#TidyTuesday](https://github.com/rfordatascience/tidytuesday/). The data can be downloaded from [here](https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-05-10/nyt_titles.tsv). You can either read it into Python directly from the URL, or read in a locally saved copy. Here, I've saved a copy called `nyt_titles.tsv` in the same directory as my script.
 
 The data is saved as a tab-separated values (.tsv) file, and we can read it into Python using the `read_csv()` function from `pandas`. We also need to specify that it is a *tab* separated file, rather than a *comma* separated file.
 
