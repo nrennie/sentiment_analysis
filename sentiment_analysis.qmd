@@ -21,7 +21,7 @@ The data is saved as a tab-separated values (.tsv) file, and we can read it into
 
 ```{r, warning=FALSE, message=FALSE}
 library(readr)
-nyt_titles <- read_tsv("../nyt_titles.tsv")
+nyt_titles <- read_tsv("nyt_titles.tsv")
 ```
 
 ```{r, echo=FALSE}
@@ -148,7 +148,7 @@ The data is saved as a tab-separated values (.tsv) file, and we can read it into
 #| warning: false
 #| message: false
 import pandas as pd 
-nyt_titles = pd.read_csv("../nyt_titles.tsv", sep="\t") 
+nyt_titles = pd.read_csv("nyt_titles.tsv", sep="\t") 
 nyt_titles.head()
 ```
 
